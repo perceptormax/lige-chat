@@ -1,0 +1,10 @@
+
+llm_service/__pycache__/*
+package-lock.json
+*.pyc
+
+.env
+
+.vscode
+
+log.txt
