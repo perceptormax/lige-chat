@@ -2,8 +2,11 @@ from typing import Union
 
 from fastapi import FastAPI
 
-app = FastAPI()
+from models import ModelInfo, ModelList
+from utils import CreateChatCompletion
+import time
 
+app = FastAPI()
 
 """
 # OpenAI-liked API interface:
@@ -23,19 +26,20 @@ curl http://localhost:8000/v1/models
 }
 """
 
-@app.get("/v1/models")
+@app.get("/models")
 def list_models():
-    return {
+    models = [
+        {"id": "model-id-0", "created": 1686935002, "owned_by": "organization-owner"},
+        {"id": "model-id-1", "created": 1686935002, "owned_by": "organization-owner"},
+        {"id": "model-id-2", "created": 1686935002, "owned_by": "openai"}
+    ]
+    model_list = ModelList(data=[ModelInfo(**model) for model in models])
+
+    response = {
         "object": "list",
-        "data": [
-            {
-            "id": "chatglm_6b",
-            "object": "model",
-            "created": 1380869047,
-            "owned_by": "zp"
-            },
-        ],
+        "data": model_list
         }
+    return model_list
 
 """
 ## Chat Completions:
@@ -69,9 +73,8 @@ curl http://localhost:8000/v1/chat/completions \
 @app.get("/v1/chat/completions")
 def chat_completion(model,
                     messages):
-    resp = {} # TODO fill chat response
-    return resp
-    
+    response = CreateChatCompletion(model, messages)
+    return response
 
 """
 ## Text Completions:
